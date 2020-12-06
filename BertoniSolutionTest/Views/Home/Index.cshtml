@@ -1,0 +1,68 @@
+﻿@model BertoniSolutionTest.Models.AlbumViewModel
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Album Page</h2>
+
+@using (Html.BeginForm("GetPhotos", "Home", FormMethod.Post))
+{
+    <div class="form-group">
+        @Html.DropDownListFor(model => model.albumId, Model.Albums.Select(x => new SelectListItem() { Text = x.Title, Value = x.Id.ToString() }), new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Ver Album" />
+    </div>
+}
+
+@Html.Partial("_GetPhotos", Model.Photos)
+
+
+<div id='myModal' class='modal'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    
+    var GetCommentPostBackURL = '/Home/GetComments';
+
+    $(function () {
+        $(".anchorDetail").click(function () {
+            debugger;
+            var $buttonClicked = $(this);
+            var id = $buttonClicked.attr('data-id');
+            var options = { "backdrop": "static", keyboard: true };
+            $.ajax({
+                type: "POST",
+                url: GetCommentPostBackURL,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ 'photoID': id }),
+                datatype: "json",
+                success: function (data) {
+                    debugger;
+                    $('#myModalContent').html(data);
+                    $('#myModal').modal(options);
+                    $('#myModal').modal('show');
+
+                },
+                error: function (err, data) {
+
+                    debugger
+                    alert("Error occured during delete " + err.responseText);
+                }
+            });
+        });
+        $("#closbtn").click(function () {
+            $('#myModal').modal('hide');
+        });
+    });  
+
+</script>  
